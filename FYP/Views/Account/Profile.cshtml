@@ -1,0 +1,95 @@
+﻿@model SysUser;
+
+<div class="my-3">
+    <h2>Edit Threshold</h2>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+<form asp-controller="Account"
+      asp-action="ProfilePost"
+      method="post">
+
+    <div class="col-md-3 mb-3 form-floating">
+        <input asp-for="ATT" class="form-control"
+               placeholder="@Model.ATT" />
+        <label asp-for="ATT">Highest Temp Threshold</label>
+        <span asp-validation-for="ATT" labelclass="text-danger"></span>
+    </div>
+
+    <div class="col-md-3 mb-3 form-floating">
+        <input asp-for="BTT" class="form-control"
+               placeholder="@Model.BTT" />
+        <label asp-for="BTT">Lowest Temp Threshold</label>
+        <span asp-validation-for="BTT" labelclass="text-danger"></span>
+    </div>
+
+    <div class="col-md-3 mb-3 form-floating">
+        <input asp-for="AHT" class="form-control"
+               placeholder="@Model.AHT" />
+        <label asp-for="AHT">Highest Humidity Threshold</label>
+        <span asp-validation-for="AHT" labelclass="text-danger"></span>
+    </div>
+
+    <div class="col-md-3 mb-3 form-floating">
+        <input asp-for="BHT" class="form-control"
+               placeholder="@Model.BHT" />
+        <label asp-for="BHT">Lowest Humidity Threshold</label>
+        <span asp-validation-for="BHT" labelclass="text-danger"></span>
+    </div>
+
+    <div class="col-md-3 mb-3 form-floating">
+        <input asp-for="ACOT" class="form-control"
+               placeholder="@Model.ACOT" />
+        <label asp-for="ACOT">Highest CO2 Threshold</label>
+        <span asp-validation-for="ACOT" labelclass="text-danger"></span>
+    </div>
+
+    <div class="col-md-3 mb-3 form-floating">
+        <input asp-for="BCOT" class="form-control"
+               placeholder="@Model.BCOT" />
+        <label asp-for="BCOT">Lowest CO2 Threshold</label>
+        <span asp-validation-for="BCOT" labelclass="text-danger"></span>
+    </div>
+
+    <div class="col-md-3 mb-3 form-floating">
+        <input asp-for="TimeIntervalTH" class="form-control"
+               placeholder="@Model.TimeIntervalTH" />
+        <label asp-for="TimeIntervalTH">TimeInterval for Temp/Humid (hr)</label>
+        <span asp-validation-for="TimeIntervalTH" labelclass="text-danger"></span>
+    </div>
+
+    <div class="col-md-3 mb-3 form-floating">
+        <input asp-for="TimeIntervalCO2" class="form-control"
+               placeholder="@Model.TimeIntervalCO2" />
+        <label asp-for="TimeIntervalCO2">TimeInterval for CO2 (hr)</label>
+        <span asp-validation-for="TimeIntervalCO2" labelclass="text-danger"></span>
+    </div>
+    
+    <div class="col-auto mb-3">
+        <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+
+    @if (ViewData["Message"] != null)
+    {
+        <div class="form-group row">
+            <div class="col-6">
+                <div class="alert alert-@ViewData["MsgType"]">
+                    <b>Message: </b>@ViewData["Message"]<br />
+                    @if (!String.IsNullOrEmpty(ViewData["ExecSQL"]?.ToString()))
+                    {
+                        <b>SQL: </b>
+
+                        @ViewData["ExecSQL"]?.ToString()
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</form>
+
