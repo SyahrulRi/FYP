@@ -18,6 +18,7 @@
       }
     },
     "IIS Express": {
+      "launchUrl": "Account/Login",
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {

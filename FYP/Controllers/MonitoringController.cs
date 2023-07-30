@@ -69,14 +69,14 @@ public class MonitoringController : Controller
         {
             if (THData[count - 1].Humidity > UserTH[0].AHT || THData[count - 1].Humidity < UserTH[0].BHT)
             {
-                TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "C. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%. Current Temperature/Humidity: " + THData[count - 1].Temperature + "C : " + THData[count - 1].Humidity + "%";
+                TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%. Current Temperature/Humidity: " + THData[count - 1].Temperature + "°C : " + THData[count - 1].Humidity + "%";
                 TempData["MsgType"] = "danger";
 
                 sendEmail(name, 2);
             }
             else
             {
-                TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "C. Current Temperature: " + THData[count - 1].Temperature + "C";
+                TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Current Temperature: " + THData[count - 1].Temperature + "°C";
                 TempData["MsgType"] = "danger";
 
                 sendEmail(name, 0);
@@ -93,7 +93,7 @@ public class MonitoringController : Controller
             }
             else
             {
-                TempData["Message"] = "Within Threshold. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "C. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%";
+                TempData["Message"] = "Within Threshold. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%";
                 TempData["MsgType"] = "success";
             }
 
