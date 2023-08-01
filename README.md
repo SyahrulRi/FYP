@@ -14,16 +14,18 @@ CREATE TABLE SysUser
    BHT      INT NOT NULL,
    ACOT     INT NOT NULL,
    BCOT     INT NOT NULL,
-   SendEmailTH DATETIME NULL,
-   SendEmailCO2 DATETIME NULL,
-   TimeIntervalTH INT NOT NULL,
+   EmailTemp DATETIME NULL,
+   EmailHumid DATETIME NULL,
+   EmailCO2 DATETIME NULL,
+   TimeIntervalTemp INT NOT NULL,
+   TimeIntervalHumid INT NOT NULL,
    TimeIntervalCO2 INT NOT NULL
 );
 
-INSERT INTO SysUser(UserId, UserPw, FullName, Email, UserRole, ATT, BTT, AHT, BHT, ACOT, BCOT, SendEmailTH, SendEmailCO2, TimeIntervalTH, TimeIntervalCO2) VALUES
-('dan', HASHBYTES('SHA1', '1232'), 'Daniel Chung', 'Dan@FYP.com', 'admin', 40, 20, 70, 30, 400, 1000, NULL, NULL, 4, 3),
-('earn', HASHBYTES('SHA1', '123'), 'Earnest Lim', 'Earn@xyc.com', 'farmer', 25, 10, 200, 10, 400, 1000, NULL, NULL, 4, 3),
-('eddie', HASHBYTES('SHA1', '123'), 'Eddie Koh', 'Eddie@xyc.com', 'farmer', 40, 30, 200, 10, 400, 1000, NULL, NULL, 4, 3);
+INSERT INTO SysUser(UserId, UserPw, FullName, Email, UserRole, ATT, BTT, AHT, BHT, ACOT, BCOT, EmailTemp, EmailHumid, EmailCO2, TimeIntervalTemp, TimeIntervalHumid, TimeIntervalCO2)  VALUES
+('dan', HASHBYTES('SHA1', '1232'), 'Daniel Chung', 'Dan@FYP.com', 'admin', 40, 20, 70, 30, 400, 1000, NULL, NULL, NULL, 4, 3, 2),
+('earn', HASHBYTES('SHA1', '123'), 'Earnest Lim', 'Earn@xyc.com', 'farmer', 25, 10, 200, 10, 400, 1000, NULL, NULL, NULL, 4, 3, 2),
+('eddie', HASHBYTES('SHA1', '123'), 'Eddie Koh', 'Eddie@xyc.com', 'farmer', 40, 30, 200, 10, 400, 1000, NULL, NULL, NULL, 4, 3, 2);
 
 
 //CO2 Sample Data
