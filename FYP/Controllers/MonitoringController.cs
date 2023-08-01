@@ -37,8 +37,6 @@ public class MonitoringController : Controller
 
         ViewBag.DataPoints1 = JsonConvert.SerializeObject(TData);
 
-        //-----------------------------------------
-
         //Second query to get Threshold from Sysuser
         List<Threshold> UserTH = DBUtl.GetList<Threshold>("SELECT * FROM SysUser where FullName = '" + User.Identity!.Name + "'");
         string name = "" + User.Identity!.Name;
@@ -132,6 +130,10 @@ public class MonitoringController : Controller
         return View();
     }
 
+    public IActionResult HistoricalData()
+    {
+        return View();
+    }
     private static List<TempHumid> LoadData(int chart)
     {
         if (chart == 1)
