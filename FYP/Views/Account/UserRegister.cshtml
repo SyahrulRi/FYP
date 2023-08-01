@@ -1,5 +1,19 @@
 ﻿@model SysUser
 
+<style>
+    body {
+        background-image: url("/images/login.jpg");
+    }
+
+    .transparent-box {
+        background-color: transparent;
+    }
+
+    .font-color {
+        color: white;
+    }
+</style>
+
 <div class="container">
 
     @if (ViewData["Message"] != null)
@@ -8,7 +22,7 @@
     }
 
     <div class="my-3">
-        <h2>Register an Account</h2>
+        <h2 class="font-color">Register an Account</h2>
     </div>
 
     <form method="post" asp-controller="Account" asp-action="Register">
