@@ -27,10 +27,11 @@ public class MonitoringController : Controller
         List<DataPoint> TData = new List<DataPoint>();
 
         // Read data into list
+        List<TempHumid> Temp = LoadData(1);
 
-        for (int i = LoadData().Count - 30; i < LoadData().Count; i++)
+        for (int i = Temp.Count - 30; i < Temp.Count; i++)
         {
-            TData.Add(new DataPoint(LoadData()[i].DataInsert.ToString(), LoadData()[i].Temperature));
+            TData.Add(new DataPoint(Temp[i].DataInsert.ToString(), Temp[i].Temperature));
         }
 
         ViewBag.DataPoints1 = JsonConvert.SerializeObject(TData);
@@ -41,11 +42,11 @@ public class MonitoringController : Controller
         List<Threshold> UserTH = DBUtl.GetList<Threshold>("SELECT * FROM SysUser where FullName = '" + User.Identity!.Name + "'");
         string name = "" + User.Identity!.Name;
 
-        int count = LoadData().Count;
-        if (LoadData()[count - 1].Temperature > UserTH[0].ATT || LoadData()[count - 1].Temperature < UserTH[0].BTT)
+        int count = Temp.Count;
+        if (Temp[count - 1].Temperature > UserTH[0].ATT || Temp[count - 1].Temperature < UserTH[0].BTT)
         {
 
-            TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Current Temperature: " + LoadData()[count - 1].Temperature + "°C";
+            TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Current Temperature: " + Temp[count - 1].Temperature + "°C";
             TempData["MsgType"] = "danger";
 
             //sendEmail(name, 0);
@@ -66,21 +67,22 @@ public class MonitoringController : Controller
         List<DataPoint> HData = new List<DataPoint>();
 
         // Read data into list
+        List<TempHumid> Humid = LoadData(1);
 
-        for (int i = LoadData().Count - 30; i < LoadData().Count; i++)
+        for (int i = Humid.Count - 30; i < Humid.Count; i++)
         {
-            HData.Add(new DataPoint(LoadData()[i].DataInsert.ToString(), LoadData()[i].Humidity));
+            HData.Add(new DataPoint(Humid[i].DataInsert.ToString(), Humid[i].Humidity));
         }
 
         ViewBag.DataPoints2 = JsonConvert.SerializeObject(HData);
 
         List<Threshold> UserTH = DBUtl.GetList<Threshold>("SELECT * FROM SysUser where FullName = '" + User.Identity!.Name + "'");
         string name = "" + User.Identity!.Name;
-        int count = LoadData().Count;
+        int count = Humid.Count;
 
-        if (LoadData()[count - 1].Humidity > UserTH[0].AHT || LoadData()[count - 1].Humidity < UserTH[0].BHT)
+        if (Humid[count - 1].Humidity > UserTH[0].AHT || Humid[count - 1].Humidity < UserTH[0].BHT)
         {
-            TempData["Message"] = "Threshold Exceeded/Subceed. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%. Current Humidity: " + LoadData()[count - 1].Humidity + "%";
+            TempData["Message"] = "Threshold Exceeded/Subceed. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%. Current Humidity: " + Humid[count - 1].Humidity + "%";
             TempData["MsgType"] = "danger";
 
             //sendEmail(name, 2);
@@ -100,29 +102,11 @@ public class MonitoringController : Controller
     {
         List<DataPoint> CData = new List<DataPoint>();
 
-        // Create MySQL connection and define Query
-        MySqlConnection conn = new MySqlConnection("server=localhost;uid=root;pwd=;database=esp32");
-        MySqlCommand query = new MySqlCommand("SELECT * FROM co2", conn);
+        List<TempHumid> CO2 = LoadData(2);
 
-        // Open connection and execute query
-        conn.Open();
-        MySqlDataReader execute = query.ExecuteReader();
-
-        // Read data into list
-        List<TempHumid> THData = new List<TempHumid>();
-
-        while (execute.Read())
+        for (int i = CO2.Count - 30; i < CO2.Count; i++)
         {
-            THData.Add(new TempHumid()
-            {
-                CO2 = execute.GetInt32("CO2"),
-                DataInsert = execute.GetDateTime("datetime"),
-            });
-        }
-
-        for (int i = THData.Count - 30; i < THData.Count; i++)
-        {
-            CData.Add(new DataPoint(THData[i].DataInsert.ToString(), THData[i].CO2));
+            CData.Add(new DataPoint(CO2[i].DataInsert.ToString(), CO2[i].CO2));
         }
 
         ViewBag.DataPoints3 = JsonConvert.SerializeObject(CData);
@@ -130,46 +114,70 @@ public class MonitoringController : Controller
         string name = "" + User.Identity!.Name;
         //Second query to get Threshold from Sysuser
         List<Threshold> UserTH = DBUtl.GetList<Threshold>("SELECT * FROM SysUser where FullName = '" + User.Identity!.Name + "'");
-        int count = THData.Count;
-        if (THData[count - 1].CO2 > UserTH[0].ACOT || THData[count - 1].CO2 < UserTH[0].BCOT)
+        int count = CO2.Count;
+        if (CO2[count - 1].CO2 > UserTH[0].ACOT || CO2[count - 1].CO2 < UserTH[0].BCOT)
         {
-            TempData["Message"] = "Threshold Exceeded/Subceed. CO2 Levels Threshold: " + UserTH[0].BCOT + "ppm - " + UserTH[0].ACOT + "ppm. Current CO2 Levels: " + THData[count - 1].CO2 + "ppm";
+            TempData["Message"] = "Threshold Exceeded/Subceed. CO2 Levels Threshold: " + UserTH[0].BCOT + "ppm - " + UserTH[0].ACOT + "ppm. Current CO2 Levels: " + CO2[count - 1].CO2 + "ppm";
             TempData["MsgType"] = "danger";
-            sendEmail(name, 2);
+            //sendEmail(name, 2);
         }
         else
         {
-            TempData["Message"] = "Within Threshold. Current Threshold: " + UserTH[0].BCOT + "ppm - " + UserTH[0].ACOT + "ppm. Current CO2 Levels: " + THData[count - 1].CO2 + "ppm";
+            TempData["Message"] = "Within Threshold. Current Threshold: " + UserTH[0].BCOT + "ppm - " + UserTH[0].ACOT + "ppm. Current CO2 Levels: " + CO2[count - 1].CO2 + "ppm";
             TempData["MsgType"] = "success";
         }
 
         // Pass data to view
-        conn.Close();
         return View();
     }
 
-    private static List<TempHumid> LoadData()
+    private static List<TempHumid> LoadData(int chart)
     {
-        MySqlConnection conn = new MySqlConnection("server=localhost;uid=root;pwd=;database=esp32");
-        MySqlCommand query = new MySqlCommand("SELECT * FROM dht22", conn);
-
-        conn.Open();
-        MySqlDataReader execute = query.ExecuteReader();
-
-        // Read data into list
-        List<TempHumid> THData = new List<TempHumid>();
-
-        while (execute.Read())
+        if (chart == 1)
         {
-            THData.Add(new TempHumid()
+            MySqlConnection conn = new MySqlConnection("server=localhost;uid=root;pwd=;database=esp32");
+            MySqlCommand query = new MySqlCommand("SELECT * FROM dht22", conn);
+
+            conn.Open();
+            MySqlDataReader execute = query.ExecuteReader();
+
+            // Read data into list
+            List<TempHumid> THData = new List<TempHumid>();
+
+            while (execute.Read())
             {
-                Temperature = execute.GetInt32("temperature"),
-                Humidity = execute.GetInt32("humidity"),
-                DataInsert = execute.GetDateTime("datetime"),
-            });
+                THData.Add(new TempHumid()
+                {
+                    Temperature = execute.GetInt32("temperature"),
+                    Humidity = execute.GetInt32("humidity"),
+                    DataInsert = execute.GetDateTime("datetime"),
+                });
+            }
+            conn.Close();
+            return (THData);
         }
-        conn.Close();
-        return (THData);
+        else
+        {
+            MySqlConnection conn = new MySqlConnection("server=localhost;uid=root;pwd=;database=esp32");
+            MySqlCommand query = new MySqlCommand("SELECT * FROM co2", conn);
+
+            conn.Open();
+            MySqlDataReader execute = query.ExecuteReader();
+
+            // Read data into list
+            List<TempHumid> CData = new List<TempHumid>();
+
+            while (execute.Read())
+            {
+                CData.Add(new TempHumid()
+                {
+                    CO2 = execute.GetInt32("CO2"),
+                    DataInsert = execute.GetDateTime("datetime"),
+                });
+            }
+            conn.Close();
+            return (CData);
+        }
     }
     private static void sendEmail(string name, int option)
     {
