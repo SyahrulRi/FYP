@@ -71,6 +71,7 @@ public class AccountController : Controller
         return RedirectToAction(REDIRECT_ACTN, REDIRECT_CNTR);
     }
 
+
     [AllowAnonymous]
     public IActionResult Register()
     {
@@ -215,6 +216,25 @@ public class AccountController : Controller
             return true;
         }
         return false;
+    }
+
+    [Authorize(Roles = "admin")]
+    public IActionResult Delete(string id)
+    {
+        string delete = "DELETE FROM SysUser WHERE UserId='{0}'";
+        int res = DBUtl.ExecSQL(delete, id);
+        if (res == 1)
+        {
+            TempData["Message"] = "User Record Deleted";
+            TempData["MsgType"] = "success";
+        }
+        else
+        {
+            TempData["Message"] = DBUtl.DB_Message;
+            TempData["MsgType"] = "danger";
+        }
+
+        return RedirectToAction("UserList");
     }
 
 }
