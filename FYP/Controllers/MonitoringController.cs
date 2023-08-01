@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 
 namespace FYP.Controllers;
@@ -137,7 +138,118 @@ public class MonitoringController : Controller
 
     public IActionResult HistoricalDataPost()
     {
-        return View();
+        IFormCollection form = HttpContext.Request.Form;
+        string topic = form["Topic"].ToString();
+        string year = form["Year"].ToString();
+
+        List<DataPoint> Data = new List<DataPoint>();
+
+        if (topic.Equals("1"))
+        {
+            List<TempHumid> THCData = LoadData(1);
+            if (year.Equals("1"))
+            {
+                for (int i = 0; i < THCData.Count; i++)
+                {
+                    if (THCData[i].DataInsert.Year == 2023)
+                    {
+                        Data.Add(new DataPoint(THCData[i].DataInsert.ToString(), THCData[i].Temperature));
+                    }
+                }
+            }
+            else if (year.Equals("2"))
+            {
+                for (int i = 0; i < THCData.Count; i++)
+                {
+                    if (THCData[i].DataInsert.Year == 2022)
+                    {
+                        Data.Add(new DataPoint(THCData[i].DataInsert.ToString(), THCData[i].Temperature));
+                    }
+                }
+            }
+            else if (year.Equals("3"))
+            {
+                for (int i = 0; i < THCData.Count; i++)
+                {
+                    if (THCData[i].DataInsert.Year == 2021)
+                    {
+                        Data.Add(new DataPoint(THCData[i].DataInsert.ToString(), THCData[i].Temperature));
+                    }
+                }
+            }
+        }
+        else if (topic.Equals("2"))
+        {
+            List<TempHumid> THCData = LoadData(1);
+            if (year.Equals("1"))
+            {
+                for (int i = 0; i < THCData.Count; i++)
+                {
+                    if (THCData[i].DataInsert.Year == 2023)
+                    {
+                        Data.Add(new DataPoint(THCData[i].DataInsert.ToString(), THCData[i].Humidity));
+                    }
+                }
+            }
+            else if (year.Equals("2"))
+            {
+                for (int i = 0; i < THCData.Count; i++)
+                {
+                    if (THCData[i].DataInsert.Year == 2022)
+                    {
+                        Data.Add(new DataPoint(THCData[i].DataInsert.ToString(), THCData[i].Humidity));
+                    }
+                }
+            }
+            else if (year.Equals("3"))
+            {
+                for (int i = 0; i < THCData.Count; i++)
+                {
+                    if (THCData[i].DataInsert.Year == 2021)
+                    {
+                        Data.Add(new DataPoint(THCData[i].DataInsert.ToString(), THCData[i].Humidity));
+                    }
+                }
+            }
+        }
+        else if (topic.Equals("3"))
+        {
+            List<TempHumid> THCData = LoadData(2);
+            if (year.Equals("1"))
+            {
+                for (int i = 0; i < THCData.Count; i++)
+                {
+                    if (THCData[i].DataInsert.Year == 2023)
+                    {
+                        Data.Add(new DataPoint(THCData[i].DataInsert.ToString(), THCData[i].CO2));
+                    }
+                }
+            }
+            else if (year.Equals("2"))
+            {
+                for (int i = 0; i < THCData.Count; i++)
+                {
+                    if (THCData[i].DataInsert.Year == 2022)
+                    {
+                        Data.Add(new DataPoint(THCData[i].DataInsert.ToString(), THCData[i].CO2));
+                    }
+                }
+            }
+            else if (year.Equals("3"))
+            {
+                for (int i = 0; i < THCData.Count; i++)
+                {
+                    if (THCData[i].DataInsert.Year == 2021)
+                    {
+                        Data.Add(new DataPoint(THCData[i].DataInsert.ToString(), THCData[i].CO2));
+                    }
+                }
+            }
+        }
+
+        ViewBag.DataPoints4 = JsonConvert.SerializeObject(Data);
+
+        return View("HistoricalData");
     }
     private static List<TempHumid> LoadData(int chart)
     {

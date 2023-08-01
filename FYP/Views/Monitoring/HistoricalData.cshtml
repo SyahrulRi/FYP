@@ -1,5 +1,57 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@section MoreScripts {
+
+    <script>
+        window.onload = function () {
+
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                title: {
+                    text: "Historical Chart"
+                },
+                toolTip: {
+                    shared: true
+                },
+                data: [{
+                    type: "line",
+                    name: "data",
+                    showInLegend: true,
+                    dataPoints: @Html.Raw(ViewBag.DataPoints4)
+                              }]
+            });
+            chart.render();
+
+        }
+    </script>
 }
+<div class="my-3">
+    <h2>Historical Data</h2>
+</div>
+
+<form method="post" asp-controller="Monitoring" asp-action="HistoricalDataPost">
+    <div class="mb-3 col-6 form-floating">
+        <select name="Topic" id="topic" class="form-control">
+            <option selected="selected" value="">Select a Topic</option>
+            <option value="1">Temperature</option>
+            <option value="2">Humidity</option>
+            <option value="3">CO2</option>
+        </select>
+        <label>Topic</label>
+    </div>
+
+    <div class="mb-3 col-6 form-floating">
+        <select name="Year" id="year" class="form-control">
+            <option selected="selected" value="">Select a Year</option>
+            <option value="1">2023</option>
+            <option value="2">2022</option>
+            <option value="3">2021</option>
+        </select>
+        <label>Year</label>
+    </div>
+    <div class="col-auto mb-3">
+        <button class="btn btn-primary" type="submit">Save</button>
+    </div>
+
+</form>
+
+    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
