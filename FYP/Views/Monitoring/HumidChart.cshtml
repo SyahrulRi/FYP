@@ -1,0 +1,40 @@
+﻿@section MoreScripts {
+
+    <script>
+        window.onload = function () {
+
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                title: {
+                    text: "Humidity Chart"
+                },
+                toolTip: {
+                    shared: true
+                },
+                data: [{
+                    type: "line",
+                    name: "Humidity (%)",
+                    showInLegend: true,
+                    dataPoints: @Html.Raw(ViewBag.DataPoints2)
+                              }]
+            });
+            chart.render();
+
+        }
+    </script>
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-@TempData["MsgType"]">
+        @TempData["Message"]
+    </div>
+}
+
+<!DOCTYPE HTML>
+<html>
+<body>
+    <div id="chartContainer" style="height: 370px; width: 100%;"></div>
+    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+</body>
+</html>    

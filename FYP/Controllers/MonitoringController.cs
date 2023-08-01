@@ -22,41 +22,18 @@ public class MonitoringController : Controller
     }
 
     [Authorize(Roles = "admin, farmer")]
-    public IActionResult TempHumidChart()
+    public IActionResult TempChart()
     {
         List<DataPoint> TData = new List<DataPoint>();
-        List<DataPoint> HData = new List<DataPoint>();
-
-        // Create MySQL connection and define Query
-        MySqlConnection conn = new MySqlConnection("server=localhost;uid=root;pwd=;database=esp32");
-        MySqlCommand query = new MySqlCommand("SELECT * FROM dht22", conn);
-
-        // Open connection and execute query
-        conn.Open();
-        MySqlDataReader execute = query.ExecuteReader();
 
         // Read data into list
-        List<TempHumid> THData = new List<TempHumid>();
 
-        while (execute.Read())
+        for (int i = LoadData().Count - 30; i < LoadData().Count; i++)
         {
-            THData.Add(new TempHumid()
-            {
-                Temperature = execute.GetInt32("temperature"),
-                Humidity = execute.GetInt32("humidity"),
-                DataInsert = execute.GetDateTime("datetime"),
-            });
-        }
-        //string x = "";
-        for (int i = THData.Count - 30; i < THData.Count; i++)
-        {
-            //x = (1+i).ToString();
-            TData.Add(new DataPoint(THData[i].DataInsert.ToString(), THData[i].Temperature));
-            HData.Add(new DataPoint(THData[i].DataInsert.ToString(), THData[i].Humidity));
+            TData.Add(new DataPoint(LoadData()[i].DataInsert.ToString(), LoadData()[i].Temperature));
         }
 
         ViewBag.DataPoints1 = JsonConvert.SerializeObject(TData);
-        ViewBag.DataPoints2 = JsonConvert.SerializeObject(HData);
 
         //-----------------------------------------
 
@@ -64,44 +41,60 @@ public class MonitoringController : Controller
         List<SysUser> UserTH = DBUtl.GetList<SysUser>("SELECT * FROM SysUser where FullName = '" + User.Identity!.Name + "'");
         string name = "" + User.Identity!.Name;
 
-        int count = THData.Count;
-        if (THData[count - 1].Temperature > UserTH[0].ATT || THData[count - 1].Temperature < UserTH[0].BTT)
+        int count = LoadData().Count;
+        if (LoadData()[count - 1].Temperature > UserTH[0].ATT || LoadData()[count - 1].Temperature < UserTH[0].BTT)
         {
-            if (THData[count - 1].Humidity > UserTH[0].AHT || THData[count - 1].Humidity < UserTH[0].BHT)
-            {
-                TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%. Current Temperature/Humidity: " + THData[count - 1].Temperature + "°C : " + THData[count - 1].Humidity + "%";
-                TempData["MsgType"] = "danger";
 
-                sendEmail(name, 2);
-            }
-            else
-            {
-                TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Current Temperature: " + THData[count - 1].Temperature + "°C";
-                TempData["MsgType"] = "danger";
+            TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Current Temperature: " + LoadData()[count - 1].Temperature + "°C";
+            TempData["MsgType"] = "danger";
 
-                sendEmail(name, 0);
-            }
+            //sendEmail(name, 0);
         }
         else
         {
-            if (THData[count - 1].Humidity > UserTH[0].AHT || THData[count - 1].Humidity < UserTH[0].BHT)
-            {
-                TempData["Message"] = "Threshold Exceeded/Subceed. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%. Current Humidity: " + THData[count - 1].Humidity + "%";
-                TempData["MsgType"] = "danger";
-
-                sendEmail(name, 1);
-            }
-            else
-            {
-                TempData["Message"] = "Within Threshold. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%";
-                TempData["MsgType"] = "success";
-            }
-
+            TempData["Message"] = "Within Threshold. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C.";
+            TempData["MsgType"] = "success";
         }
+
         // Pass data to view
-        conn.Close();
         return View();
     }
+
+    [Authorize(Roles = "admin, farmer")]
+    public IActionResult HumidChart()
+    {
+        List<DataPoint> HData = new List<DataPoint>();
+
+        // Read data into list
+
+        for (int i = LoadData().Count - 30; i < LoadData().Count; i++)
+        {
+            HData.Add(new DataPoint(LoadData()[i].DataInsert.ToString(), LoadData()[i].Humidity));
+        }
+
+        ViewBag.DataPoints2 = JsonConvert.SerializeObject(HData);
+
+        List<SysUser> UserTH = DBUtl.GetList<SysUser>("SELECT * FROM SysUser where FullName = '" + User.Identity!.Name + "'");
+        string name = "" + User.Identity!.Name;
+        int count = LoadData().Count;
+
+        if (LoadData()[count - 1].Humidity > UserTH[0].AHT || LoadData()[count - 1].Humidity < UserTH[0].BHT)
+        {
+            TempData["Message"] = "Threshold Exceeded/Subceed. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%. Current Humidity: " + LoadData()[count - 1].Humidity + "%";
+            TempData["MsgType"] = "danger";
+
+            //sendEmail(name, 2);
+        }
+        else
+        {
+            TempData["Message"] = "Within Threshold. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%";
+            TempData["MsgType"] = "success";
+        }
+
+        // Pass data to view
+        return View();
+    }
+
     [Authorize(Roles = "admin, farmer")]
     public IActionResult CO2Chart()
     {
@@ -142,7 +135,7 @@ public class MonitoringController : Controller
         {
             TempData["Message"] = "Threshold Exceeded/Subceed. CO2 Levels Threshold: " + UserTH[0].BCOT + "ppm - " + UserTH[0].ACOT + "ppm. Current CO2 Levels: " + THData[count - 1].CO2 + "ppm";
             TempData["MsgType"] = "danger";
-            sendEmail(name,3);
+            sendEmail(name, 2);
         }
         else
         {
@@ -155,6 +148,29 @@ public class MonitoringController : Controller
         return View();
     }
 
+    private static List<TempHumid> LoadData()
+    {
+        MySqlConnection conn = new MySqlConnection("server=localhost;uid=root;pwd=;database=esp32");
+        MySqlCommand query = new MySqlCommand("SELECT * FROM dht22", conn);
+
+        conn.Open();
+        MySqlDataReader execute = query.ExecuteReader();
+
+        // Read data into list
+        List<TempHumid> THData = new List<TempHumid>();
+
+        while (execute.Read())
+        {
+            THData.Add(new TempHumid()
+            {
+                Temperature = execute.GetInt32("temperature"),
+                Humidity = execute.GetInt32("humidity"),
+                DataInsert = execute.GetDateTime("datetime"),
+            });
+        }
+        conn.Close();
+        return (THData);
+    }
     private static void sendEmail(string name, int option)
     {
         //query to get Threshold from Sysuser
@@ -198,23 +214,6 @@ public class MonitoringController : Controller
             }
         }
         else if (option == 2)
-        {
-            string template = "Dear " + UserTH[0].FullName + " \n\r" +
-                          "<p>" + UserTH[0].BTT + UserTH[0].ATT + "</p> \n\r" +
-                          "<p>" + UserTH[0].BHT + UserTH[0].AHT + "</p> \n\r" +
-                          "<p>Sensor has detected the both Temperature and Humidity Threshold has been breach.</p> \n\r" +
-                          "Temperature & Humidity Sensor \n\r";
-            if (UserTH[0].SendEmailTH.AddHours(UserTH[0].TimeIntervalTH) >= DateTime.Now)
-            {
-                return;
-            }
-            else
-            {
-                DBUtl.ExecSQL("UPDATE SysUser SET SendEmailTH = '" + time + "' WHERE FullName='" + name + "'");
-                EmailUtl.SendEmail(UserTH[0].Email, subject, template, out string result);
-            }
-        }
-        else if (option == 3)
         {
             string template = "Dear " + UserTH[0].FullName + " \n\r" +
                          "<p>" + UserTH[0].BCOT + UserTH[0].ACOT + "</p> \n\r" +
