@@ -2,6 +2,11 @@
 
 <div class="container">
 
+    @if (ViewData["Message"] != null)
+    {
+        <div class="alert alert-@ViewData["Message"]]">@ViewData["Message"]</div>
+    }
+
     <div class="my-3">
         <h2>Register an Account</h2>
     </div>

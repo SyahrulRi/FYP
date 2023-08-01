@@ -90,7 +90,7 @@ public class AccountController : Controller
         else
         {
             string insert =
-               @"INSERT INTO sysuser(UserId, UserPw, FullName, Email, UserRole, ATT, BTT, AHT, BHT, ACOT, BCOT, SendEmailTH, SendEmailCO2, TimeIntervalTH, TimeIntervalCO2) VALUES
+               @"INSERT INTO SysUser(UserId, UserPw, FullName, Email, UserRole, ATT, BTT, AHT, BHT, ACOT, BCOT, SendEmailTH, SendEmailCO2, TimeIntervalTH, TimeIntervalCO2) VALUES
                  ('{0}', HASHBYTES('SHA1', '{1}'), '{2}', '{3}', 'farmer', 20, 20, 20, 20, 20, 20 , NULL, NULL, 4, 3)";
             int res = DBUtl.ExecSQL(insert, usr.UserId, usr.UserPw, usr.FullName, usr.Email);
             if (res == 1)
@@ -116,7 +116,7 @@ public class AccountController : Controller
         DataTable dt = DBUtl.GetTable(sql);
         if (dt.Rows.Count == 1)
         {
-            SysUser User = new()
+            Threshold threshold = new()
             {
                 ATT = (int)dt.Rows[0]["ATT"],
                 BTT = (int)dt.Rows[0]["BTT"],
@@ -127,7 +127,7 @@ public class AccountController : Controller
                 TimeIntervalTH = (int)dt.Rows[0]["TimeIntervalTH"],
                 TimeIntervalCO2 = (int)dt.Rows[0]["TimeIntervalCO2"],
             };
-            return View(User);
+            return View(threshold);
         }
         else
         {
