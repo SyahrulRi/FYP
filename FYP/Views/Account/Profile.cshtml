@@ -58,10 +58,17 @@
     </div>
 
     <div class="col-md-3 mb-3 form-floating">
-        <input asp-for="TimeIntervalTH" class="form-control"
-               placeholder="@Model.TimeIntervalTH" />
-        <label asp-for="TimeIntervalTH">TimeInterval for Temp/Humid (hr)</label>
-        <span asp-validation-for="TimeIntervalTH" labelclass="text-danger"></span>
+        <input asp-for="TimeIntervalTemp" class="form-control"
+               placeholder="@Model.TimeIntervalTemp" />
+        <label asp-for="TimeIntervalTemp">TimeInterval for Temp (hr)</label>
+        <span asp-validation-for="TimeIntervalTemp" labelclass="text-danger"></span>
+    </div>
+
+    <div class="col-md-3 mb-3 form-floating">
+        <input asp-for="TimeIntervalHumid" class="form-control"
+               placeholder="@Model.TimeIntervalHumid" />
+        <label asp-for="TimeIntervalHumid">TimeInterval for Humid (hr)</label>
+        <span asp-validation-for="TimeIntervalHumid" labelclass="text-danger"></span>
     </div>
 
     <div class="col-md-3 mb-3 form-floating">

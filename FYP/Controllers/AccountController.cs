@@ -91,8 +91,8 @@ public class AccountController : Controller
         else
         {
             string insert =
-               @"INSERT INTO SysUser(UserId, UserPw, FullName, Email, UserRole, ATT, BTT, AHT, BHT, ACOT, BCOT, SendEmailTH, SendEmailCO2, TimeIntervalTH, TimeIntervalCO2) VALUES
-                 ('{0}', HASHBYTES('SHA1', '{1}'), '{2}', '{3}', 'farmer', 20, 20, 20, 20, 20, 20 , NULL, NULL, 4, 3)";
+               @"INSERT INTO SysUser(UserId, UserPw, FullName, Email, UserRole, ATT, BTT, AHT, BHT, ACOT, BCOT, EmailTemp, EmailHumid, EmailCO2, TimeIntervalTemp, TimeIntervalHumid, TimeIntervalCO2) VALUES
+                 ('{0}', HASHBYTES('SHA1', '{1}'), '{2}', '{3}', 'farmer', 40, 30, 200, 10, 400, 1000, NULL, NULL, NULL, 4, 3, 2)";
             int res = DBUtl.ExecSQL(insert, usr.UserId, usr.UserPw, usr.FullName, usr.Email);
             if (res == 1)
             {
@@ -125,7 +125,8 @@ public class AccountController : Controller
                 BHT = (int)dt.Rows[0]["BHT"],
                 ACOT = (int)dt.Rows[0]["ACOT"],
                 BCOT = (int)dt.Rows[0]["BCOT"],
-                TimeIntervalTH = (int)dt.Rows[0]["TimeIntervalTH"],
+                TimeIntervalTemp = (int)dt.Rows[0]["TimeIntervalTemp"],
+                TimeIntervalHumid = (int)dt.Rows[0]["TimeIntervalHumid"],
                 TimeIntervalCO2 = (int)dt.Rows[0]["TimeIntervalCO2"],
             };
             return View(threshold);
@@ -146,15 +147,16 @@ public class AccountController : Controller
         string BHT1 = form["BHT"].ToString().Trim();
         string ACOT1 = form["ACOT"].ToString().Trim();
         string BCOT1 = form["BCOT"].ToString().Trim();
-        string TimeInterval1 = form["TimeIntervalTH"].ToString().Trim();
-        string TimeInterval2 = form["TimeIntervalCO2"].ToString().Trim();
+        string TimeInterval1 = form["TimeIntervalTemp"].ToString().Trim();
+        string TimeInterval2 = form["TimeIntervalHumid"].ToString().Trim();
+        string TimeInterval3 = form["TimeIntervalCO2"].ToString().Trim();
 
         // Update Record in Database  
         string sql = @"UPDATE SysUser
-                       SET ATT = {0}, BTT = {1}, AHT = {2}, BHT = {3}, ACOT = {4}, BCOT = {5}, TimeIntervalTH = {6}, TimeIntervalCO2 = {7}
+                       SET ATT = {0}, BTT = {1}, AHT = {2}, BHT = {3}, ACOT = {4}, BCOT = {5}, TimeIntervalTemp = {6}, TimeIntervalHumid= {7},  TimeIntervalCO2 = {8}
                        WHERE FullName='" + User.Identity!.Name + "'";
 
-        string update = string.Format(sql, ATT1, BTT1, AHT1, BHT1, ACOT1, BCOT1, TimeInterval1, TimeInterval2);
+        string update = string.Format(sql, ATT1, BTT1, AHT1, BHT1, ACOT1, BCOT1, TimeInterval1, TimeInterval2, TimeInterval3);
 
         int count = DBUtl.ExecSQL(update);
         if (count == 1)

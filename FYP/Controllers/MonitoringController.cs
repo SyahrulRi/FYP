@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 
 namespace FYP.Controllers;
@@ -49,7 +50,7 @@ public class MonitoringController : Controller
             TempData["Message"] = "Threshold Exceeded/Subceed. Temperature Threshold: " + UserTH[0].BTT + "-" + UserTH[0].ATT + "°C. Current Temperature: " + Temp[count - 1].Temperature + "°C";
             TempData["MsgType"] = "danger";
 
-            //sendEmail(name, 0);
+            sendEmail(name, 0);
         }
         else
         {
@@ -85,7 +86,7 @@ public class MonitoringController : Controller
             TempData["Message"] = "Threshold Exceeded/Subceed. Humidity Threshold: " + UserTH[0].BHT + "-" + UserTH[0].AHT + "%. Current Humidity: " + Humid[count - 1].Humidity + "%";
             TempData["MsgType"] = "danger";
 
-            //sendEmail(name, 2);
+            sendEmail(name, 1);
         }
         else
         {
@@ -119,7 +120,7 @@ public class MonitoringController : Controller
         {
             TempData["Message"] = "Threshold Exceeded/Subceed. CO2 Levels Threshold: " + UserTH[0].BCOT + "ppm - " + UserTH[0].ACOT + "ppm. Current CO2 Levels: " + CO2[count - 1].CO2 + "ppm";
             TempData["MsgType"] = "danger";
-            //sendEmail(name, 2);
+            sendEmail(name, 2);
         }
         else
         {
@@ -185,59 +186,53 @@ public class MonitoringController : Controller
         List<Threshold> TH = DBUtl.GetList<Threshold>("SELECT * FROM SysUser where FullName = '" + name + "'");
         List<SysUser> User = DBUtl.GetList<SysUser>("SELECT * FROM SysUser where FullName = '" + name + "'");
         // Template
-        string subject = "TempHumid";
+        string subject = "Warning";
         string time = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss tt");
+
+        string template = "Dear {0} \n\r" +
+                          "<p>Sensor has detected the {1} Threshold has been breach. </p> \n\r" +
+                          "<p>Current Threshold: {2}-{3}°C</p> \n\r" +
+                          "<p>EnviRo</p>";
 
         if (option == 0)
         {
-            string template = "Dear " + User[0].FullName + " \n\r" +
-                          "<p>Current Threshold: " + TH[0].BTT + TH[0].ATT + "C</p> \n\r" +
-                          "<p>Sensor has detected the Temperature Threshold has been breach. </p> \n\r" +
-                          "Temperatue Sensor \n\r";
-            if (TH[0].SendEmailTH.AddHours(TH[0].TimeIntervalTH) >= DateTime.Now)
+            if (TH[0].EmailTemp.AddHours(TH[0].TimeIntervalTemp) >= DateTime.Now)
             {
                 return;
             }
             else
             {
-                DBUtl.ExecSQL("UPDATE SysUser SET SendEmailTH = '" + time + "' WHERE FullName = '" + name + "'");
-                EmailUtl.SendEmail(User[0].Email, subject, template, out string result);
+                string body = String.Format(template, name, "Temperature", TH[0].BTT, TH[0].ATT);
+                DBUtl.ExecSQL("UPDATE SysUser SET EmailTemp = '" + time + "' WHERE FullName = '" + name + "'");
+                EmailUtl.SendEmail(User[0].Email, subject, body, out string result);
             }
-
         }
         else if (option == 1)
         {
-            string template = "Dear " + User[0].FullName + " \n\r" +
-                          "<p>Current Threshold:" + TH[0].BHT + TH[0].AHT + "%</p> \n\r" +
-                          "<p>Sensor has detected the Humidity Threshold has been breach. </p> \n\r" +
-                          "Humidity Sensor \n\r";
-            if (TH[0].SendEmailTH.AddHours(TH[0].TimeIntervalTH) >= DateTime.Now)
+            if (TH[0].EmailHumid.AddHours(TH[0].TimeIntervalHumid) >= DateTime.Now)
             {
                 return;
             }
             else
             {
-                DBUtl.ExecSQL("UPDATE SysUser SET SendEmailTH = '" + time + "' WHERE FullName = '" + name + "'");
-                EmailUtl.SendEmail(User[0].Email, subject, template, out string result);
+                string body = String.Format(template, name, "Humidity", TH[0].BHT, TH[0].AHT);
+                DBUtl.ExecSQL("UPDATE SysUser SET EmailHumid = '" + time + "' WHERE FullName = '" + name + "'");
+                EmailUtl.SendEmail(User[0].Email, subject, body, out string result);
             }
         }
         else if (option == 2)
         {
-            string template = "Dear " + User[0].FullName + " \n\r" +
-                         "<p>" + TH[0].BCOT + TH[0].ACOT + "</p> \n\r" +
-                         "<p>Sensor has detected the CO2 Threshold has been breach. </p> \n\r" +
-                         "CO2 Sensor \n\r";
-            if (TH[0].SendEmailCO2.AddHours(TH[0].TimeIntervalTH) >= DateTime.Now)
+            if (TH[0].EmailCO2.AddHours(TH[0].TimeIntervalCO2) >= DateTime.Now)
             {
                 return;
             }
             else
             {
-                DBUtl.ExecSQL("UPDATE SysUser SET SendEmailCO2 = '" + time + "' WHERE FullName = '" + name + "'");
-                EmailUtl.SendEmail(User[0].Email, subject, template, out string result);
+                string body = String.Format(template, name, "CO2", TH[0].BCOT, TH[0].ACOT);
+                DBUtl.ExecSQL("UPDATE SysUser SET EmailCO2 = '" + time + "' WHERE FullName = '" + name + "'");
+                EmailUtl.SendEmail(User[0].Email, subject, body, out string result);
             }
         }
     }
-
 }
 
