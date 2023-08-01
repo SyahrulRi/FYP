@@ -134,6 +134,11 @@ public class MonitoringController : Controller
     {
         return View();
     }
+
+    public IActionResult HistoricalDataPost()
+    {
+        return View();
+    }
     private static List<TempHumid> LoadData(int chart)
     {
         if (chart == 1)
