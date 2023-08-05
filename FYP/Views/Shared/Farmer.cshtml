@@ -1,8 +1,14 @@
-﻿<div class="container border-bottom">
+﻿<style>
+    .font-color {
+        color: white;
+    }
+</style>
+
+<div class="container border-bottom">
     <nav class="navbar navbar-expand-md">
         <div class="container-fluid">
 
-            <img src="~/images/enviro-logo.png" height="20" width="90">
+            <img src="~/images/enviro-logo-white.png" height="20" width="90">
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent">
@@ -14,10 +20,10 @@
                     <div>
                         <ul class="nav navbar-nav">
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Account" asp-action="Profile">Profile</a>
+                                <a class="nav-link font-color" asp-controller="Account" asp-action="Profile">Profile</a>
                             </li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" role="button"
+                                <a class="nav-link dropdown-toggle font-color" role="button"
                                    href="#" id="navbarDropdown" data-bs-toggle="dropdown">
                                     Visualisations
                                 </a>
@@ -29,19 +35,19 @@
                                 </ul>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Monitoring" asp-action="HistoricalData">HistoricalData</a>
+                                <a class="nav-link font-color" asp-controller="Monitoring" asp-action="HistoricalData">HistoricalData</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Monitoring" asp-action="About">About</a>
+                                <a class="nav-link font-color" asp-controller="Monitoring" asp-action="About">About</a>
                             </li>
                         </ul>
                     </div>
                     <div>
                         <ul class="nav navbar-nav">
                             <li span class="nav-item">
-                                <div class="nav-link">
+                                <div class="nav-link font-color">
                                     Welcome @User.Identity!.Name
-                                    <a class="bi-box-arrow-right text-decoration-none text-muted" asp-controller="Account"
+                                    <a class="bi-box-arrow-right text-decoration-none font-color" asp-controller="Account"
                                        asp-action="Logoff" data-toggle="tooltip" title="Log out"></a>
                                 </div>
                             </li>

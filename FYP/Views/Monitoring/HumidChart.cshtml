@@ -1,4 +1,18 @@
-﻿@section MoreScripts {
+﻿<style>
+    body {
+        background-image: url("/images/login.jpg");
+    }
+
+    .transparent-box {
+        background-color: transparent;
+    }
+
+    .font-color {
+        color: white;
+    }
+</style>
+
+@section MoreScripts {
 
     <script>
         window.onload = function () {
@@ -23,6 +37,10 @@
         }
     </script>
 }
+
+    <div class="my-3 font-color">
+        <h2>Humidity Chart</h2>
+    </div>
 
 @if (TempData["Message"] != null)
 {

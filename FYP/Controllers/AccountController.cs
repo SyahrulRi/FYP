@@ -92,7 +92,7 @@ public class AccountController : Controller
         {
             string insert =
                @"INSERT INTO SysUser(UserId, UserPw, FullName, Email, UserRole, ATT, BTT, AHT, BHT, ACOT, BCOT, EmailTemp, EmailHumid, EmailCO2, TimeIntervalTemp, TimeIntervalHumid, TimeIntervalCO2) VALUES
-                 ('{0}', HASHBYTES('SHA1', '{1}'), '{2}', '{3}', 'farmer', 40, 30, 200, 10, 400, 1000, NULL, NULL, NULL, 4, 3, 2)";
+                 ('{0}', HASHBYTES('SHA1', '{1}'), '{2}', '{3}', 'farmer', 40, 30, 200, 10, 1000, 400, NULL, NULL, NULL, 4, 3, 2)";
             int res = DBUtl.ExecSQL(insert, usr.UserId, usr.UserPw, usr.FullName, usr.Email);
             if (res == 1)
             {
@@ -150,6 +150,22 @@ public class AccountController : Controller
         string TimeInterval1 = form["TimeIntervalTemp"].ToString().Trim();
         string TimeInterval2 = form["TimeIntervalHumid"].ToString().Trim();
         string TimeInterval3 = form["TimeIntervalCO2"].ToString().Trim();
+
+
+        if (Int16.Parse(ATT1) < Int16.Parse(BTT1))
+        {
+            TempData["Message"] = "Highest Temperature (" + ATT1 + "°C) cannot be lower than lowest temperature (" + BTT1 + "°C)";
+            TempData["MsgType"] = "danger";
+            return RedirectToAction("Profile");
+        } else if (Int16.Parse(AHT1) < Int16.Parse(BHT1)) {
+            TempData["Message"] = "Highest Humidity (" + AHT1 + "%) cannot be lower than lowest Humidity (" + BHT1 + "%)";
+            TempData["MsgType"] = "danger";
+            return RedirectToAction("Profile");
+        } else if (Int16.Parse(ACOT1) < Int16.Parse(BCOT1)) {
+            TempData["Message"] = "Highest CO2 (" + ACOT1 + "ppm) cannot be lower than lowest CO2 (" + BCOT1 + "ppm)";
+            TempData["MsgType"] = "danger";
+            return RedirectToAction("Profile");
+        } 
 
         // Update Record in Database  
         string sql = @"UPDATE SysUser
